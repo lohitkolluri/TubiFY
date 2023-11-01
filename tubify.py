@@ -3,27 +3,37 @@ from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from googleapiclient.discovery import build
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 import time
 from pytube import YouTube
+import logging
+from tqdm import tqdm  # Import tqdm for the progress bar
 
 # Load credentials from .env
 load_dotenv()
 
+# Initialize logging
+logging.basicConfig(filename='tubify.log', level=logging.INFO)
+
 # Initialize Spotify API client
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id=os.getenv("SPOTIPY_CLIENT_ID"),
-    client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
-    redirect_uri='http://localhost:8888/callback',
-    scope='user-library-read playlist-read-private'
-))
+def init_spotify_client():
+    return spotipy.Spotify(auth_manager=SpotifyOAuth(
+        client_id=os.getenv("SPOTIPY_CLIENT_ID"),
+        client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
+        redirect_uri='http://localhost:8888/callback',
+        scope='user-library-read playlist-read-private'
+    ))
 
 # Initialize YouTube Data API client
-youtube_api_key = os.getenv("YOUTUBE_API_KEY")
-youtube = build('youtube', 'v3', developerKey=youtube_api_key)
+def init_youtube_client():
+    youtube_api_key = os.getenv("YOUTUBE_API_KEY")
+    return build('youtube', 'v3', developerKey=youtube_api_key)
 
 # Output directory for downloaded files
 output_directory = "downloaded_files"
+
+# Initialize YouTube client
+youtube = init_youtube_client()
 
 def get_youtube_link(track_name, artist_name):
     search_query = f'{track_name} {artist_name} official music video'
@@ -35,24 +45,16 @@ def get_youtube_link(track_name, artist_name):
         return youtube_link
     return None
 
-def download_audio(youtube_link, track_name, artist_name):
+def download_media(youtube_link, track_name, artist_name, is_audio=True):
     try:
         yt = YouTube(youtube_link)
-        audio_stream = yt.streams.filter(only_audio=True).first()
-        audio_stream.download(output_path=output_directory, filename=f"{track_name} by {artist_name}.mp3")
+        stream = yt.streams.filter(only_audio=is_audio).first() if is_audio else yt.streams.get_highest_resolution()
+        extension = 'mp3' if is_audio else 'mp4'
+        file_name = f"{track_name} by {artist_name}.{extension}"
+        stream.download(output_path=output_directory, filename=file_name)
         return True
     except Exception as e:
-        print(f"Failed to download audio: {e}")
-        return False
-
-def download_video(youtube_link, track_name, artist_name):
-    try:
-        yt = YouTube(youtube_link)
-        video_stream = yt.streams.get_highest_resolution()
-        video_stream.download(output_path=output_directory, filename=f"{track_name} by {artist_name}.mp4")
-        return True
-    except Exception as e:
-        print(f"Failed to download video: {e}")
+        logging.error(f"Failed to download {'audio' if is_audio else 'video'}: {e}")
         return False
 
 def get_playlist_id_from_url(playlist_url):
@@ -75,11 +77,12 @@ def process_playlist(playlist_url, output_file, download_choice):
     playlist_id = get_playlist_id_from_url(playlist_url)
 
     if playlist_id:
+        sp = init_spotify_client()
         # Fetch playlist tracks
         playlists = sp.playlist_tracks(playlist_id)
 
         with open(output_file, "a") as file:
-            for track in playlists['items']:
+            for track in tqdm(playlists['items'], desc="Processing", unit="track"):
                 track_name = track['track']['name']
                 artist_name = track['track']['artists'][0]['name']
                 youtube_link = get_youtube_link(track_name, artist_name)
@@ -87,31 +90,31 @@ def process_playlist(playlist_url, output_file, download_choice):
                     file.write(f"Track: {track_name} by {artist_name}\n")
                     file.write(f"YouTube Link: {youtube_link}\n")
                     file.write("\n")
-                    print(f"Processed: {track_name} by {artist_name}")
+                    logging.info(f"Processed: {track_name} by {artist_name}")
 
                     if download_choice == "aa":
-                        success = download_audio(youtube_link, track_name, artist_name)
+                        success = download_media(youtube_link, track_name, artist_name, is_audio=True)
                         if success:
-                            print(f"Downloaded audio (MP3) for: {track_name} by {artist_name}")
+                            logging.info(f"Downloaded audio (MP3) for: {track_name} by {artist_name}")
                     elif download_choice == "av":
-                        success = download_video(youtube_link, track_name, artist_name)
+                        success = download_media(youtube_link, track_name, artist_name, is_audio=False)
                         if success:
-                            print(f"Downloaded video (MP4) for: {track_name} by {artist_name}")
+                            logging.info(f"Downloaded video (MP4) for: {track_name} by {artist_name}")
                     elif download_choice == "custom":
                         download_format = input("Download as audio (a), video (v), or skip (s): ")
                         if download_format.lower() == "a":
-                            success = download_audio(youtube_link, track_name, artist_name)
+                            success = download_media(youtube_link, track_name, artist_name, is_audio=True)
                             if success:
-                                print(f"Downloaded audio (MP3) for: {track_name} by {artist_name}")
+                                logging.info(f"Downloaded audio (MP3) for: {track_name} by {artist_name}")
                         elif download_format.lower() == "v":
-                            success = download_video(youtube_link, track_name, artist_name)
+                            success = download_media(youtube_link, track_name, artist_name, is_audio=False)
                             if success:
-                                print(f"Downloaded video (MP4) for: {track_name} by {artist_name}")
+                                logging.info(f"Downloaded video (MP4) for: {track_name} by {artist_name}")
                 else:
-                    print(f"Track not found on YouTube: {track_name} by {artist_name}")
+                    logging.warning(f"Track not found on YouTube: {track_name} by {artist_name}")
         return True
     else:
-        print("Invalid or unsupported Spotify playlist URL. Please check the URL format.")
+        logging.error("Invalid or unsupported Spotify playlist URL. Please check the URL format.")
         return False
 
 def main():

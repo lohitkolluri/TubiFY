@@ -1,48 +1,74 @@
-# TubiFY: Spotify Playlist to YouTube Downloader
+# TubiFY
 
-TubiFY is a Python script that enables you to convert your Spotify playlists into YouTube links and download the corresponding audio or video. You can choose to download all tracks as audio, all tracks as video, or make a custom choice for each track. The script also provides an option to skip tracks.
+TubiFY is a Python script that helps you convert your favorite Spotify playlists into YouTube links for easy access to the music and videos. It utilizes the Spotify API to fetch track information and the YouTube Data API to search for corresponding music videos. You can choose to download the audio or video of these tracks or customize the download format.
 
 ## Prerequisites
 
-Before you can use TubiFY, you need to set up your environment and obtain the necessary credentials:
+Before using TubiFY, ensure you have the following installed and configured:
 
-1. **Spotify API Credentials**: You'll need a Spotify API client ID and client secret. Create a Spotify Developer application to obtain these credentials.
+- Python 3
+- Pip (Python package manager)
+- Spotify Developer Account (for API credentials)
+- Google Developer Account (for YouTube Data API credentials)
+- A Google API Key
+- [PyTube](https://python-pytube.readthedocs.io/en/latest/user/install.html) for downloading YouTube videos
+- [dotenv](https://pypi.org/project/python-dotenv/) for managing environment variables
+- [Spotipy](https://spotipy.readthedocs.io/en/2.19.0/) for Spotify API integration
+- [tqdm](https://tqdm.github.io/) for displaying a progress bar (optional)
 
-2. **YouTube API Key**: You'll need a YouTube Data API key. Follow the Google API Console's instructions to create a project and obtain an API key.
+You can install the required Python packages using pip:
 
-3. **Python Libraries**: Make sure to install the required Python libraries using `pip`:
+```bash
+pip install -r requirements.txt
+```
 
-   ```bash
-   pip install spotipy google-api-python-client pytube python-dotenv
+## Getting Started
+
+1. Clone this repository or download the script (tubify.py) to your local machine.
+
+2. Create a `.env` file in the same directory as tubify.py and add the following credentials:
+
    ```
-
-## Configuration
-
-1. Create a `.env` file in the same directory as your script and add the following environment variables:
-
-   ```env
    SPOTIPY_CLIENT_ID=your_spotify_client_id
    SPOTIPY_CLIENT_SECRET=your_spotify_client_secret
    YOUTUBE_API_KEY=your_youtube_api_key
    ```
 
-2. Configure the `redirect_uri` for Spotify OAuth to 'http://localhost:8888/callback' in your Spotify Developer application settings.
+   Replace `your_spotify_client_id`, `your_spotify_client_secret`, and `your_youtube_api_key` with your respective API keys.
+
+3. Run TubiFY by executing the following command in your terminal:
+
+   ```bash
+   python3 tubify.py
+   ```
+
+4. Follow the on-screen prompts to process your Spotify playlists and download the tracks from YouTube.
 
 ## Usage
 
-1. Run the script by executing it in your terminal:
+- Enter the number of playlists to process.
 
-   ```bash
-   python TubiFY.py
-   ```
+- Choose the download option:
+  - `aa`: Download all tracks as audio (MP3).
+  - `av`: Download all tracks as video (MP4).
+  - `custom`: Customize the download format for each track.
+  - `skip`: Skip the download process.
 
-2. The script will prompt you to enter the following information:
+- For each playlist, provide the Spotify playlist URL and follow the on-screen prompts to complete the process.
 
-   - The number of playlists to process.
-   - Download choice: 'aa' for audio, 'av' for video, 'custom' to make a custom choice, or 's' to skip tracks.
+- TubiFY will create a file named `youtube_links.txt` that contains the YouTube links for the tracks.
 
-3. Follow the script's instructions to enter the Spotify playlist URLs.
+## Features
 
-4. The script will process the playlists, find YouTube links for the tracks, and download the selected audio or video files.
+- Easily convert Spotify playlists to YouTube links.
+- Choose between audio (MP3) and video (MP4) downloads.
+- Customize the download format for each track.
+- Progress bar for tracking playlist processing (requires tqdm).
 
-5. All YouTube links will be saved to a `youtube_links.txt` file in the script's directory.
+## Troubleshooting
+
+If you encounter any issues, please check the following:
+
+- Ensure you have the required dependencies installed.
+- Double-check your API credentials and make sure they are correctly stored in the `.env` file.
+- Verify that the Spotify playlist URL is in the correct format.
