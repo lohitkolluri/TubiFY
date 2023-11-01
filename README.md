@@ -1,66 +1,48 @@
-# TubiFY
+# TubiFY: Spotify Playlist to YouTube Downloader
 
-This Python script allows you to convert a Spotify playlist into a list of YouTube links for the songs in that playlist. It uses the Spotify and YouTube Data APIs to retrieve the playlist information and search for corresponding YouTube videos.
+TubiFY is a Python script that enables you to convert your Spotify playlists into YouTube links and download the corresponding audio or video. You can choose to download all tracks as audio, all tracks as video, or make a custom choice for each track. The script also provides an option to skip tracks.
 
 ## Prerequisites
 
-Before using the script, make sure you have the following:
+Before you can use TubiFY, you need to set up your environment and obtain the necessary credentials:
 
-1. Spotify Developer Account:
-   - You need to create a Spotify Developer account and set up a Spotify Application to obtain the necessary API credentials (Client ID and Client Secret).
+1. **Spotify API Credentials**: You'll need a Spotify API client ID and client secret. Create a Spotify Developer application to obtain these credentials.
 
-2. Spotify Redirect URI:
-   - Specify a Redirect URI when setting up your Spotify Application. You will use this URI in the script.
+2. **YouTube API Key**: You'll need a YouTube Data API key. Follow the Google API Console's instructions to create a project and obtain an API key.
 
-3. YouTube Data API Key:
-   - Obtain a YouTube Data API Key from the [Google Developers Console](https://console.developers.google.com/).
+3. **Python Libraries**: Make sure to install the required Python libraries using `pip`:
 
-4. Python Environment:
-   - You should have Python 3.x installed on your system.
-
-## Installation
-
-1. Clone the repository or download the script.
-
-2. Install the required Python packages using pip:
-
-   ```
-   pip install spotipy google-auth google-auth-httplib2 google-api-python-client python-dotenv
+   ```bash
+   pip install spotipy google-api-python-client pytube python-dotenv
    ```
 
-3. Create a `.env` file in the same directory as the script with the following contents:
+## Configuration
 
-   ```plaintext
+1. Create a `.env` file in the same directory as your script and add the following environment variables:
+
+   ```env
    SPOTIPY_CLIENT_ID=your_spotify_client_id
    SPOTIPY_CLIENT_SECRET=your_spotify_client_secret
    YOUTUBE_API_KEY=your_youtube_api_key
    ```
 
-   Replace `your_spotify_client_id`, `your_spotify_client_secret`, and `your_youtube_api_key` with your actual credentials.
+2. Configure the `redirect_uri` for Spotify OAuth to 'http://localhost:8888/callback' in your Spotify Developer application settings.
 
 ## Usage
 
-1. Run the script using the following command:
+1. Run the script by executing it in your terminal:
 
+   ```bash
+   python TubiFY.py
    ```
-   python tubify.py
-   ```
 
-2. You will be prompted to enter the Spotify playlist URL.
+2. The script will prompt you to enter the following information:
 
-3. The script will extract the playlist ID and fetch the playlist's tracks.
+   - The number of playlists to process.
+   - Download choice: 'aa' for audio, 'av' for video, 'custom' to make a custom choice, or 's' to skip tracks.
 
-4. It will then search for YouTube links for each song and save them to a `youtube_links.txt` file in the same directory.
+3. Follow the script's instructions to enter the Spotify playlist URLs.
 
-5. The generated YouTube links will be available in the `youtube_links.txt` file.
+4. The script will process the playlists, find YouTube links for the tracks, and download the selected audio or video files.
 
-## Notes
-
-- The script may not always find the exact official music video on YouTube, so the generated links might not be perfect, but they should be close.
-- Ensure that your Spotify Application and Redirect URI are correctly configured in both the script and your Spotify Developer Dashboard.
-
-## Acknowledgments
-
-- This script utilizes the Spotipy library for Spotify API interactions.
-- It uses the Google API Client for YouTube Data API requests.
-- Created by Lohit Kolluri.
+5. All YouTube links will be saved to a `youtube_links.txt` file in the script's directory.
