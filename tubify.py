@@ -29,11 +29,19 @@ def init_youtube_client():
     youtube_api_key = os.getenv("YOUTUBE_API_KEY")
     return build('youtube', 'v3', developerKey=youtube_api_key)
 
-# Output directory for downloaded files
-output_directory = "downloaded_files"
+# Output directories for downloaded files
+mp3_output_directory = "downloaded_files/MP3"
+mp4_output_directory = "downloaded_files/MP4"
 
 # Initialize YouTube client
 youtube = init_youtube_client()
+
+# Function to create directories if they don't exist
+def create_directories():
+    if not os.path.exists(mp3_output_directory):
+        os.makedirs(mp3_output_directory)
+    if not os.path.exists(mp4_output_directory):
+        os.makedirs(mp4_output_directory)
 
 def get_youtube_link(track_name, artist_name):
     search_query = f'{track_name} {artist_name} official music video'
@@ -51,7 +59,10 @@ def download_media(youtube_link, track_name, artist_name, is_audio=True):
         stream = yt.streams.filter(only_audio=is_audio).first() if is_audio else yt.streams.get_highest_resolution()
         extension = 'mp3' if is_audio else 'mp4'
         file_name = f"{track_name} by {artist_name}.{extension}"
-        stream.download(output_path=output_directory, filename=file_name)
+        if is_audio:
+            stream.download(output_path=mp3_output_directory, filename=file_name)
+        else:
+            stream.download(output_path=mp4_output_directory, filename=file_name)
         return True
     except Exception as e:
         logging.error(f"Failed to download {'audio' if is_audio else 'video'}: {e}")
@@ -118,14 +129,12 @@ def process_playlist(playlist_url, output_file, download_choice):
         return False
 
 def main():
-    output_file = "youtube_links.txt"
+    create_directories()  # Create the output directories
 
     num_playlists = int(input("Enter the number of playlists to process: "))
     download_choice = input("Download all tracks as audio (aa), all tracks as video (av), custom (c), or skip (s): ")
+    output_file = "youtube_links.txt"
 
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory)
-    
     for i in range(num_playlists):
         playlist_url = input(f"Enter the Spotify playlist URL {i + 1}: ")
         success = process_playlist(playlist_url, output_file, download_choice)
@@ -135,7 +144,9 @@ def main():
         # Add a delay to avoid hitting API rate limits
         time.sleep(2)
 
-    print(f"YouTube links have been saved to {output_file}")
+    print(f"MP3 files have been saved to {mp3_output_directory}")
+    print(f"MP4 files have been saved to {mp4_output_directory}")
 
 if __name__ == "__main__":
     main()
+
