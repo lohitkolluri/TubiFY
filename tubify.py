@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 import time
 from pytube import YouTube
 import logging
-from tqdm import tqdm  # Import tqdm for the progress bar
+from tqdm import tqdm
 
 # Load credentials from .env
 load_dotenv()
@@ -56,13 +56,17 @@ def get_youtube_link(track_name, artist_name):
 def download_media(youtube_link, track_name, artist_name, is_audio=True):
     try:
         yt = YouTube(youtube_link)
+        # Get the stream based on audio or video preference
         stream = yt.streams.filter(only_audio=is_audio).first() if is_audio else yt.streams.get_highest_resolution()
+
+        if not stream:
+            logging.error(f"No suitable {'audio' if is_audio else 'video'} stream found for: {track_name} by {artist_name}")
+            return False
+
         extension = 'mp3' if is_audio else 'mp4'
         file_name = f"{track_name} by {artist_name}.{extension}"
-        if is_audio:
-            stream.download(output_path=mp3_output_directory, filename=file_name)
-        else:
-            stream.download(output_path=mp4_output_directory, filename=file_name)
+        output_directory = mp3_output_directory if is_audio else mp4_output_directory
+        stream.download(output_path=output_directory, filename=file_name)
         return True
     except Exception as e:
         logging.error(f"Failed to download {'audio' if is_audio else 'video'}: {e}")
@@ -103,24 +107,14 @@ def process_playlist(playlist_url, output_file, download_choice):
                     file.write("\n")
                     logging.info(f"Processed: {track_name} by {artist_name}")
 
-                    if download_choice == "aa":
+                    if download_choice == "aa" or (download_choice == "custom" and input("Download as audio (a), video (v), or skip (s): ").lower() == "a"):
                         success = download_media(youtube_link, track_name, artist_name, is_audio=True)
                         if success:
                             logging.info(f"Downloaded audio (MP3) for: {track_name} by {artist_name}")
-                    elif download_choice == "av":
+                    elif download_choice == "av" or (download_choice == "custom" and input("Download as audio (a), video (v), or skip (s): ").lower() == "v"):
                         success = download_media(youtube_link, track_name, artist_name, is_audio=False)
                         if success:
                             logging.info(f"Downloaded video (MP4) for: {track_name} by {artist_name}")
-                    elif download_choice == "custom":
-                        download_format = input("Download as audio (a), video (v), or skip (s): ")
-                        if download_format.lower() == "a":
-                            success = download_media(youtube_link, track_name, artist_name, is_audio=True)
-                            if success:
-                                logging.info(f"Downloaded audio (MP3) for: {track_name} by {artist_name}")
-                        elif download_format.lower() == "v":
-                            success = download_media(youtube_link, track_name, artist_name, is_audio=False)
-                            if success:
-                                logging.info(f"Downloaded video (MP4) for: {track_name} by {artist_name}")
                 else:
                     logging.warning(f"Track not found on YouTube: {track_name} by {artist_name}")
         return True
@@ -139,7 +133,7 @@ def main():
         playlist_url = input(f"Enter the Spotify playlist URL {i + 1}: ")
         success = process_playlist(playlist_url, output_file, download_choice)
         if not success:
-            continue
+            logging.warning(f"Failed to process playlist: {playlist_url}")
 
         # Add a delay to avoid hitting API rate limits
         time.sleep(2)
@@ -149,4 +143,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

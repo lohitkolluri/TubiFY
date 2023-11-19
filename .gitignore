@@ -1,3 +1,5 @@
 .env
 youtube_links.txt
 .cache
+/downloaded_files
+tubify.log
