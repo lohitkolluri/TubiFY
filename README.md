@@ -1,10 +1,10 @@
 # TubiFY
 
-TubiFY is a Python script that helps you convert your favorite Spotify playlists into YouTube links for easy access to the music and videos. It utilizes the Spotify API to fetch track information and the YouTube Data API to search for corresponding music videos. You can choose to download the audio or video of these tracks or customize the download format.
+TubiFY is a Python script that converts your favorite Spotify playlists into YouTube links, providing easy access to both music and videos. It leverages the Spotify API to fetch track information and the YouTube Data API to search for corresponding music videos. You can customize the download format and choose between audio or video downloads.
 
 ## Prerequisites
 
-Before using TubiFY, ensure you have the following installed and configured:
+Before using TubiFY, make sure you have the following installed and configured:
 
 - Python 3
 - Pip (Python package manager)
@@ -16,7 +16,7 @@ Before using TubiFY, ensure you have the following installed and configured:
 - [Spotipy](https://spotipy.readthedocs.io/en/2.19.0/) for Spotify API integration
 - [tqdm](https://tqdm.github.io/) for displaying a progress bar (optional)
 
-You can install the required Python packages using pip:
+Install the required Python packages using pip:
 
 ```bash
 pip install -r requirements.txt
@@ -72,3 +72,5 @@ If you encounter any issues, please check the following:
 - Ensure you have the required dependencies installed.
 - Double-check your API credentials and make sure they are correctly stored in the `.env` file.
 - Verify that the Spotify playlist URL is in the correct format.
+```
+https://open.spotify.com/playlist/XYZ
