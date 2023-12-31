@@ -1,32 +1,33 @@
-# TubiFY
+<h1 align="center" id="title">TubiFy</h1>
 
-TubiFY is a Python script that converts your favorite Spotify playlists into YouTube links, providing easy access to both music and videos. It leverages the Spotify API to fetch track information and the YouTube Data API to search for corresponding music videos. You can customize the download format and choose between audio or video downloads.
+<p id="description">TubiFY is a Python script that converts your favorite Spotify playlists into YouTube links providing easy access to both music and videos. It leverages the Spotify API to fetch track information and the YouTube Data API to search for corresponding music videos. You can customize the download format and choose between audio or video downloads.</p>
 
-## Prerequisites
+  
+  
+<h2>🧐 Features</h2>
 
-Before using TubiFY, make sure you have the following installed and configured:
+Here're some of the project's best features:
 
-- Python 3
-- Pip (Python package manager)
-- Spotify Developer Account (for API credentials)
-- Google Developer Account (for YouTube Data API credentials)
-- A Google API Key
-- [PyTube](https://python-pytube.readthedocs.io/en/latest/user/install.html) for downloading YouTube videos
-- [dotenv](https://pypi.org/project/python-dotenv/) for managing environment variables
-- [Spotipy](https://spotipy.readthedocs.io/en/2.19.0/) for Spotify API integration
-- [tqdm](https://tqdm.github.io/) for displaying a progress bar (optional)
+*   Easily convert Spotify playlists to YouTube links.
+*   Choose between audio (MP3) and video (MP4) downloads.
+*   Customize the download format for each track.
+*   Progress bar for tracking playlist processing (requires tqdm).
 
-Install the required Python packages using pip:
+<h2>🛠️ Installation Steps:</h2>
 
-```bash
+<p>1. Clone this repository or download the script (tubify.py) to your local machine.</p>
+
+```
+git clone https://github.com/lohitkolluri/TubiFY.git
+```
+
+<p>2. Install the required Python packages using pip:</p>
+
+```
 pip install -r requirements.txt
 ```
 
-## Getting Started
-
-1. Clone this repository or download the script (tubify.py) to your local machine.
-
-2. Create a `.env` file in the same directory as tubify.py and add the following credentials:
+<p>3. Create a .env file in the same directory as tubify.py and add the following credentials:
 
    ```
    SPOTIPY_CLIENT_ID=your_spotify_client_id
@@ -36,15 +37,13 @@ pip install -r requirements.txt
 
    Replace `your_spotify_client_id`, `your_spotify_client_secret`, and `your_youtube_api_key` with your respective API keys.
 
-3. Run TubiFY by executing the following command in your terminal:
+<p>4. Run TubiFY by executing the following command in your terminal:</p>
 
-   ```bash
-   python3 tubify.py
-   ```
+```
+ python3 tubify.py
+```
 
-4. Follow the on-screen prompts to process your Spotify playlists and download the tracks from YouTube.
-
-## Usage
+<h2>⚙️ Usage</h2>
 
 - Enter the number of playlists to process.
 
@@ -57,20 +56,17 @@ pip install -r requirements.txt
 - For each playlist, provide the Spotify playlist URL and follow the on-screen prompts to complete the process.
 
 - TubiFY will create a file named `youtube_links.txt` that contains the YouTube links for the tracks.
+  
+<h2>💻 Built with</h2>
 
-## Features
+Technologies used in the project:
 
-- Easily convert Spotify playlists to YouTube links.
-- Choose between audio (MP3) and video (MP4) downloads.
-- Customize the download format for each track.
-- Progress bar for tracking playlist processing (requires tqdm).
+*   Python
+*   Spotipy
+*   GoogleAPIClient
+*   Pytube
+*   DotENV
 
-## Troubleshooting
+<h2>🛡️ License:</h2>
 
-If you encounter any issues, please check the following:
-
-- Ensure you have the required dependencies installed.
-- Double-check your API credentials and make sure they are correctly stored in the `.env` file.
-- Verify that the Spotify playlist URL is in the correct format.
-```
-https://open.spotify.com/playlist/XYZ
+This project is licensed under the [MIT License](LICENSE)
